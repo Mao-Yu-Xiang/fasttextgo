@@ -1,5 +1,6 @@
 #include <iostream>
 #include <istream>
+#include "fasttext_wrapper.h"
 #include "fasttext.h"
 #include "real.h"
 #include <streambuf>
@@ -65,4 +66,23 @@ int predictMaxIntention(char* name, char *query, float *prob, char **buf, int *c
 		return 1;
   }
 }
+}
+
+int getVector(char *name, char *word, float *vector) {
+  int dim = g_fasttext_model.at(std::string(name))->getDimension();
+
+  fasttext::Vector out(dim);
+  try {
+    g_fasttext_model.at(std::string(name))->getWordVector(out, std::string(word));
+    for (int i=0;i < dim; i++) {
+      *(vector+i) = (float) out[i];
+    }
+    return 0;
+  } catch (const std::exception& e) {
+    return 1;
+  }
+}
+
+int getDimension(char *name) {
+  return g_fasttext_model.at(std::string(name))->getDimension();
 }

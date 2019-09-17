@@ -5,6 +5,8 @@ package fasttextgo
 // void load_model(char *name, char *pathZ);
 // int predict(char* name, char *query, float *prob, char **buf, int *count, int k, int buf_sz);
 // int predictMaxIntention(char* name, char *query, float *prob, char **buf, int *count, int buf_sz);
+// int getVector(char *name, char *word, float *vector);
+// int getDimension(char *name);
 import "C"
 import (
 	"errors"
@@ -91,4 +93,27 @@ func PredictMaxIntention(name, sentence string) ([]string, []float32, error) {
 	}
 
 	return resultLabel, resultScore, nil
+}
+
+func GetWordVector(name, word string) ([]float32, error) {
+	n := C.CString(name)
+	w := C.CString(word)
+
+	dim := int(C.getDimension(n))
+	resultVector := make([]float32, dim, dim)
+	vector := make([]C.float, dim, dim)
+	ret := C.getVector(n, w, &vector[0])
+	if ret != 0 {
+		return resultVector, errors.New("error in word2vector")
+	} else {
+		for i := 0; i < dim; i++ {
+			resultVector[i] = float32(vector[i])
+		}
+	}
+	//free the memory used by C
+	C.free(unsafe.Pointer(w))
+	C.free(unsafe.Pointer(n))
+	// C.free(unsafe.Pointer(&vector))
+
+	return resultVector, nil
 }
