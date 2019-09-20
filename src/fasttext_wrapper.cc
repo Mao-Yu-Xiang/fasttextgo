@@ -87,6 +87,11 @@ int getDimension(char *name) {
   return g_fasttext_model.at(std::string(name))->getDimension();
 }
 
+int getWordN(char *name) {
+  std::shared_ptr<const fasttext::Dictionary> dict = g_fasttext_model.at(std::string(name))->getDictionary();
+  return (dict->nwords)();
+}
+
 int getSimilar(char *name, char *query, int k, char **words, float *scores, int *count, int buf_sz) {
   try {
     std::vector<std::pair<fasttext::real, std::string>> neighbors = g_fasttext_model.at(std::string(name))->getNN(query, k);
@@ -98,6 +103,18 @@ int getSimilar(char *name, char *query, int k, char **words, float *scores, int 
       i++;
     }
     *count=i;
+    return 0;
+  } catch (const std::exception& e) {
+    return 1;
+  }
+}
+
+int getWords(char *name, char **words, int buf_sz) {
+  try {
+    std::shared_ptr<const fasttext::Dictionary> dict = g_fasttext_model.at(std::string(name))->getDictionary();
+    for (int i= 0; i < (dict->nwords)(); i++) {
+      strncpy(*(words+i), (dict->getWord)(i).c_str(), buf_sz);
+    }
     return 0;
   } catch (const std::exception& e) {
     return 1;

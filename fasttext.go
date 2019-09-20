@@ -8,6 +8,8 @@ package fasttextgo
 // int getVector(char *name, char *word, float *vector);
 // int getDimension(char *name);
 // int getSimilar(char *name, char *query, int k, char **words, float *scores, int *count, int buf_sz);
+// int getWordN(char *name);
+// int getWords(char *name, char **words, int buf_sz);
 import "C"
 import (
 	"errors"
@@ -145,6 +147,42 @@ func GetMostSimilar(name, query string, top int) (map[string]float32, error) {
 	C.free(unsafe.Pointer(n))
 	C.free(unsafe.Pointer(q))
 	for i := 0; i < top; i++ {
+		C.free(unsafe.Pointer(words[i]))
+	}
+
+	return result, nil
+}
+
+func GetWordN(name string) int {
+	n := C.CString(name)
+	//free the memory used by C
+	C.free(unsafe.Pointer(n))
+	return int(C.getWordN(n))
+}
+
+func GetWords(name string) ([]string, error) {
+	n := C.CString(name)
+	number := int(C.getWordN(n))
+
+	words := make([]*C.char, number, number)
+
+	for i := 0; i < number; i++ {
+		words[i] = (*C.char)(C.calloc(128, 1))
+	}
+
+	ret := C.getWords(n, &words[0], 128)
+	result := make([]string, number, number)
+	if ret != 0 {
+		return result, errors.New("error in word2vector")
+	} else {
+		for i := 0; i < number; i++ {
+			result[i] = C.GoString(words[i])
+		}
+	}
+
+	//free the memory used by C
+	C.free(unsafe.Pointer(n))
+	for i := 0; i < number; i++ {
 		C.free(unsafe.Pointer(words[i]))
 	}
 
