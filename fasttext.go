@@ -121,6 +121,29 @@ func GetWordVector(name, word string) ([]float32, error) {
 	return resultVector, nil
 }
 
+func GetWordVector64(name, word string) ([]float64, error) {
+	n := C.CString(name)
+	w := C.CString(word)
+
+	dim := int(C.getDimension(n))
+	resultVector := make([]float64, dim, dim)
+	vector := make([]C.float, dim, dim)
+	ret := C.getVector(n, w, &vector[0])
+	if ret != 0 {
+		return resultVector, errors.New("error in word2vector")
+	} else {
+		for i := 0; i < dim; i++ {
+			resultVector[i] = float64(vector[i])
+		}
+	}
+	//free the memory used by C
+	C.free(unsafe.Pointer(w))
+	C.free(unsafe.Pointer(n))
+	// C.free(unsafe.Pointer(&vector))
+
+	return resultVector, nil
+}
+
 func GetMostSimilar(name, query string, top int) (map[string]float32, error) {
 	n := C.CString(name)
 	q := C.CString(query)
