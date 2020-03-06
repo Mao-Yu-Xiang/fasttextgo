@@ -1,5 +1,7 @@
 #include <iostream>
 #include <istream>
+#include <sstream>
+#include <string>
 #include "fasttext_wrapper.h"
 #include "fasttext.h"
 #include "real.h"

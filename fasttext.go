@@ -183,6 +183,13 @@ func GetWordN(name string) int {
 	return int(C.getWordN(n))
 }
 
+func GetDimension(name string) int {
+	n := C.CString(name)
+	dim := int(C.getDimension(n))
+	C.free(unsafe.Pointer(n))
+	return dim
+}
+
 func GetWords(name string) ([]string, error) {
 	n := C.CString(name)
 	number := int(C.getWordN(n))
