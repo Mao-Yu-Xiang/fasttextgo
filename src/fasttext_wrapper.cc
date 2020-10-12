@@ -18,10 +18,10 @@ struct membuf : std::streambuf
     }
 };
 
-std::map<std::string, fasttext::FastText*> g_fasttext_model;
+std::map<std::string, std::shared_ptr<fasttext::FastText>> g_fasttext_model;
 
 void load_model(char *name, char *path) {
-	fasttext::FastText *model=new fasttext::FastText();
+	std::shared_ptr<fasttext::FastText> model = std::make_shared<fasttext::FastText>();
 	model->loadModel(std::string(path));
 	g_fasttext_model[std::string(name)]=model;
 }
