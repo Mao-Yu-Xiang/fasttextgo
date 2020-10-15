@@ -26,6 +26,12 @@ void load_model(char *name, char *path) {
 	g_fasttext_model[std::string(name)]=model;
 }
 
+void remove_model(char *name) {
+  if (g_fasttext_model.find(std::string(name)) != g_fasttext_model.end()) {
+    g_fasttext_model.erase(std::string(name));
+  }
+}
+
 //get top k result
 int predict(char* name, char *query, float *prob, char **buf, int *count, int k, int buf_sz) {
   membuf sbuf(query, query + strlen(query));

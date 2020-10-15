@@ -3,6 +3,7 @@ package fasttextgo
 // #cgo LDFLAGS: -L${SRCDIR} -lfasttext -lstdc++ -lm
 // #include <stdlib.h>
 // void load_model(char *name, char *pathZ);
+// void remove_model(char *name);
 // int predict(char* name, char *query, float *prob, char **buf, int *count, int k, int buf_sz);
 // int predictMaxIntention(char* name, char *query, float *prob, char **buf, int *count, int buf_sz);
 // int getVector(char *name, char *word, float *vector);
@@ -25,6 +26,15 @@ func LoadModel(name, path string) {
 
 	C.free(unsafe.Pointer(p1))
 	C.free(unsafe.Pointer(p2))
+}
+
+// RemoveModel - remove FastText model to free memory
+func RemoveModel(name string) {
+	n := C.CString(name)
+
+	C.remove_model(n)
+
+	C.free(unsafe.Pointer(n))
 }
 
 // Predict - predict, return the topN predicted label and their corresponding probability

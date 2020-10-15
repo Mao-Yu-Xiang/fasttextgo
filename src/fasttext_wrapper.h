@@ -4,6 +4,7 @@
 extern "C" {
 #endif
 void load_model(char *name, char *path);
+void remove_model(char *name);
 int predict(char* name, char *query, float *prob, char **buf, int *count, int k, int buf_sz);
 int predictMaxIntention(char* name, char *query, float *prob, char **buf, int *count, int buf_sz);
 int getVector(char *name, char *word, float *vector);
